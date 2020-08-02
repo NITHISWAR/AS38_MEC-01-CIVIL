@@ -1,0 +1,79 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using FireSharp.Config;
+using FireSharp.Interfaces;
+using FireSharp.Response;
+
+namespace RainWater_Level_Monitoring
+
+{
+    public partial class Form1:Form
+    {
+        IFirebaseConfig config=new FirebaseConfig{
+            AuthSecret="GH9zhEZ8Dnn0ogibuBMrx1Lzc30cKfoHMjkbwZwL",
+            BasePath="https;//rainwater-5d6ba.firebaseio.com"
+
+        };
+        IFirebaseClient client;
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void label5_Click(object sender,EventArgs e)
+        {
+
+        }
+
+        private void Form1_Load(object sender,EventArgs e)
+        {
+            var data=new Data
+            {
+                Value=label8.Text
+            };
+
+            client = new FireSharp.FirebaseClient(config);
+            if(client!=null)
+            {
+                MessageBox.Show("Connection Established");
+                label11.Text="Connected";
+            }
+            else
+            {
+                label11.Text="Connection Error\n Check your internet connection\n Try again";
+
+            } 
+            String date;
+        }
+
+        private void timer1_Tick(object sender,EventArgs e)
+        {
+
+
+        }
+
+        private async void button1_Click(object sender,EventArgs e)
+        {
+            FirebaseResponse response = await client.GetTaskAsync("Rain_Drop_Level");
+            FirebaseResponse response1 = await client.GetTaskAsync("Rain_Flow_Level");
+            FirebaseResponse response2 = await client.GetTaskAsync("Rain_Storage_Level");
+        
+            Data obj1 = response.ResultAs<Data>();
+            Data obj2 = response1.ResultAs<Data>();
+            Data obj3 = response2.ResultAs<Data>();
+
+            label8.Text = obj1.rain_intensity;
+            label9.Text = obj2.rain_flow;
+            label10.Text = obj3.rain_storage;
+
+        }
+
+    }
+}
